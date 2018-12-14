@@ -195,7 +195,10 @@ namespace uwsgi {
 		}
 
 		public void Request(IntPtr req) {
-			appHost.ProcessRequest(req);
+			var cts = new CancellationTokenSource();
+			cts.CancelAfter(600000);
+			var task = Task.Factory.StartNew(() => appHost.ProcessRequest(req), cts.Token);
+			task.Wait(cts.Token);
 		}
 
 
