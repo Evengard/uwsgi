@@ -711,6 +711,7 @@ static int uwsgi_mono_request(struct wsgi_request *wsgi_req) {
 				return -1;
 			}
 		}
+		uwsgi_log("Request with path %s failed with the following mono exception:\n", wsgi_req->uri);
 		mono_print_unhandled_exception((MonoObject *)exc);
 	}
 

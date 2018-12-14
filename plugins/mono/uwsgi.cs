@@ -196,9 +196,21 @@ namespace uwsgi {
 
 		public void Request(IntPtr req) {
 			var cts = new CancellationTokenSource();
+			var task = new Task(() => {
+				using (cts.Token.Register(Thread.CurrentThread.Abort))
+				{
+					appHost.ProcessRequest(req);
+				}
+			}, cts.Token, TaskCreationOptions.LongRunning);
 			cts.CancelAfter(600000);
-			var task = Task.Factory.StartNew(() => appHost.ProcessRequest(req), cts.Token);
-			task.Wait(cts.Token);
+			task.Start();
+			try {
+				task.Wait(cts.Token);
+			}
+			catch (OperationCanceledException)
+			{
+				task.Wait(1000);
+			}
 		}
 
 
