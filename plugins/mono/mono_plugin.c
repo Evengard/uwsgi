@@ -371,10 +371,9 @@ static int uwsgi_mono_init() {
 
 
 static void uwsgi_mono_create_jit() {
-
-
 	mono_config_parse(umono.config);
 
+	mono_jit_set_aot_mode(MONO_AOT_MODE_HYBRID);
 	umono.main_domain = mono_jit_init_version("uwsgi", umono.version);
 	if (!umono.main_domain) {
 		uwsgi_log("unable to initialize Mono JIT\n");
